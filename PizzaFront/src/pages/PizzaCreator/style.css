@@ -1,0 +1,11 @@
+.selected-size-option {
+  background-color: var(--primary-color-active) !important;
+}
+
+.size-option {
+  background-color: var(--primary-color) !important;
+}
+
+.size-option:hover {
+  background-color: var(--primary-color-hover) !important;
+}
