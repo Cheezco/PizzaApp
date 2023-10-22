@@ -1,9 +1,41 @@
 #root {
   width: 100%;
   height: 100%;
+
+  --primary-color: #fca311;
+  --primary-color-hover: #f29602;
+  --primary-color-active: #ce8003;
+
+  --secondary-color: #14213d;
+  --secondary-color-hover: #0f192e;
+  --secondary-color-active: #0a111f;
+
+  --background-color: #e5e5e5;
+  --background-color-darker: #ebebeb;
 }
 
 body {
   width: 100vw;
   height: 100vh;
+  background-color: var(--background-color);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--primary-color) !important;
+  --bs-btn-hover-bg: var(--primary-color-hover) !important;
+  --bs-btn-active-bg: var(--primary-color-active) !important;
+  border: none !important;
+}
+
+.navbar-nav:hover {
+  --bs-nav-link-hover-color: var(--primary-color);
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
+  color: var(--primary-color-active) !important;
+}
+
+.navbar {
+  background-color: var(--background-color-darker) !important;
 }
