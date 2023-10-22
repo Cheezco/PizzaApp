@@ -824,3 +824,6 @@ fabric.properties
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/node,react,csharp,rider,visualstudio,visualstudiocode
+PizzaApi/.idea/.idea.PizzaApi/.idea/misc.xml
+PizzaApi/.idea/.idea.PizzaApi/.idea/.gitignore
+PizzaApi/.idea/.idea.PizzaApi/.idea/encodings.xml
