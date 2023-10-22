@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8054B872-D078-4321-918B-93881B002237}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApi.Core", "PizzaApi.Core\PizzaApi.Core.csproj", "{439EE848-8647-483C-926B-364F6F5CDFC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApi.Infrastructure", "PizzaApi.Infrastructure\PizzaApi.Infrastructure.csproj", "{A62F4B27-959B-4178-BE2E-DB3095584767}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaApi.Web", "PizzaApi.Web\PizzaApi.Web.csproj", "{892FD9FC-BEEB-414B-A838-0C23FE850DE1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{439EE848-8647-483C-926B-364F6F5CDFC7} = {8054B872-D078-4321-918B-93881B002237}
+		{A62F4B27-959B-4178-BE2E-DB3095584767} = {8054B872-D078-4321-918B-93881B002237}
+		{892FD9FC-BEEB-414B-A838-0C23FE850DE1} = {8054B872-D078-4321-918B-93881B002237}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{439EE848-8647-483C-926B-364F6F5CDFC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{439EE848-8647-483C-926B-364F6F5CDFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{439EE848-8647-483C-926B-364F6F5CDFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{439EE848-8647-483C-926B-364F6F5CDFC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A62F4B27-959B-4178-BE2E-DB3095584767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A62F4B27-959B-4178-BE2E-DB3095584767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A62F4B27-959B-4178-BE2E-DB3095584767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A62F4B27-959B-4178-BE2E-DB3095584767}.Release|Any CPU.Build.0 = Release|Any CPU
+		{892FD9FC-BEEB-414B-A838-0C23FE850DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{892FD9FC-BEEB-414B-A838-0C23FE850DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{892FD9FC-BEEB-414B-A838-0C23FE850DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{892FD9FC-BEEB-414B-A838-0C23FE850DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
