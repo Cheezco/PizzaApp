@@ -16,7 +16,6 @@
 
     <ItemGroup>
       <Folder Include="Auth\" />
-      <Folder Include="Extensions\" />
       <Folder Include="Specifications\" />
     </ItemGroup>
 
