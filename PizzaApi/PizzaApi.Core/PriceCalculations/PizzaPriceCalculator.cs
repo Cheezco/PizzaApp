@@ -4,17 +4,31 @@ namespace PizzaApi.Core.PriceCalculations;
 
 public class PizzaPriceCalculator : IPizzaPriceCalculator
 {
-    public decimal GetPrice(PizzaSize pizzaSize, List<PriceRequestTopping> toppings)
+    public PriceResponse GetPrice(PizzaSize pizzaSize, List<PriceRequestTopping> toppings)
     {
-        var price = pizzaSize.Price;
+        var response = new PriceResponse
+        {
+            SizePrice = pizzaSize.Price,
+            TotalPrice = pizzaSize.Price
+        };
 
-        toppings.ForEach(x => price += x.Price * x.Count);
+        toppings.ForEach(x =>
+        {
+            response.TotalPrice += x.Price * x.Count;
+            response.Toppings.Add(new PriceResponseTopping
+            {
+                CategoryId = x.CategoryId,
+                Id = x.Id,
+                Count = x.Count,
+                Price = x.Price * x.Count
+            });
+        });
 
         if (toppings.Count > 3)
         {
-            price *= 0.9m;
+            response.TotalPrice *= 0.9m;
         }
 
-        return price;
+        return response;
     }
 }

@@ -4,5 +4,5 @@ namespace PizzaApi.Core.PriceCalculations;
 
 public interface IPizzaPriceCalculator
 {
-    public decimal GetPrice(PizzaSize pizzaSize, List<PriceRequestTopping> toppings);
+    public PriceResponse GetPrice(PizzaSize pizzaSize, List<PriceRequestTopping> toppings);
 }

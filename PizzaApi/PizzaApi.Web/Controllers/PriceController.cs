@@ -23,7 +23,7 @@ public class PriceController : ControllerBase
     }
 
     [HttpPost(Name = "CalculatePrice")]
-    public async Task<ActionResult<decimal>> CalculatePrice(PriceRequest priceRequest)
+    public async Task<ActionResult<PriceResponse>> CalculatePrice(PriceRequest priceRequest)
     {
         var pizzaSizeSpec = new PizzaSizeByIdSpec(priceRequest.PizzaSizeId);
         var pizzaSize = await _pizzaSizeRepository.FirstOrDefaultAsync(pizzaSizeSpec);
@@ -43,7 +43,8 @@ public class PriceController : ControllerBase
 
             if (topping is null || toppingDto.Count > topping.Limit) return BadRequest();
 
-            toppings.Add(new PriceRequestTopping(toppingDto.Count, topping.Price));
+            toppings.Add(new PriceRequestTopping(toppingDto.Id, toppingDto.CategoryId, toppingDto.Count,
+                topping.Price));
         }
 
         return Ok(_pizzaPriceCalculator.GetPrice(pizzaSize, toppings));
