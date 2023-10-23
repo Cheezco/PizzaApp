@@ -4,12 +4,13 @@ import SizeTab from "./SizeTab";
 import ToppingTab from "./ToppingTab";
 import OrderTab from "./OrderTab";
 import { Card } from "react-bootstrap";
+import OrderPlacedTab from "./OrderPlacedTab";
 
 export function PizzaCreator() {
   const [activeStep, setActiveStep] = useState(0);
 
   const handleStepChange = (step: number) => {
-    if (step < 0 || step > 2) return;
+    if (step < 0 || step > 3) return;
 
     setActiveStep(step);
   };
@@ -50,15 +51,23 @@ export function PizzaCreator() {
               onClick={() => {
                 console.log(2);
               }}
-              label="Order"
+              label="Verify order"
+            ></Step>
+            <Step
+              onClick={() => {
+                console.log(2);
+              }}
+              label="Finish"
             ></Step>
           </Stepper>
           {activeStep == 0 ? (
             <SizeTab currentStep={0} setActiveStep={handleStepChange} />
           ) : activeStep == 1 ? (
             <ToppingTab currentStep={1} setActiveStep={handleStepChange} />
-          ) : (
+          ) : activeStep == 2 ? (
             <OrderTab currentStep={2} setActiveStep={handleStepChange} />
+          ) : (
+            <OrderPlacedTab />
           )}
         </Card.Body>
       </Card>

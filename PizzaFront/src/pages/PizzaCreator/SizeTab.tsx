@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import "./style.css";
+import { PizzaSize } from "../../types/dataTypes";
+
+import { getPizzaSizes } from "../../lib/api/pizzaSize";
+import { getSelectedSize, saveSelectedSize } from "../../lib/pizzaCreatorUtils";
 
 export default function SizeTab({
   currentStep,
@@ -9,8 +13,22 @@ export default function SizeTab({
   currentStep: number;
   setActiveStep: (step: number) => void;
 }) {
-  const sizes = getPizzaSizes();
-  const [selectedSize, setSelectedSize] = useState(0);
+  const [pizzaSizes, setPizzaSizes] = useState<PizzaSize[]>([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      setPizzaSizes(await getPizzaSizes());
+    };
+
+    fetch();
+  }, []);
+
+  const [selectedSize, setSelectedSize] = useState(getSelectedSize()?.id ?? -1);
+
+  const handleSizeSelect = (size: PizzaSize) => {
+    setSelectedSize(size.id);
+    saveSelectedSize(size);
+  };
 
   return (
     <div className="p-4 gap-4 d-flex flex-column h-100">
@@ -19,43 +37,35 @@ export default function SizeTab({
           <h3>Choose pizza size</h3>
         </div>
         <div className="d-flex justify-content-center align-items-center gap-2">
-          {sizes.map((size, index) => {
+          {pizzaSizes.map((size, index) => {
             return (
               <Button
-                onClick={() => setSelectedSize(index)}
+                key={size.id}
+                onClick={() => handleSizeSelect(size)}
                 className={`${
-                  selectedSize == index ? "selected-size-option" : "size-option"
+                  selectedSize == size.id
+                    ? "selected-size-option"
+                    : "size-option"
                 } rounded-circle d-flex justify-content-center align-items-center text-black`}
-                style={size.renderSize}
+                style={{ width: `${5 + index}em`, height: `${5 + index}em` }}
               >
-                {size.text}
+                <div>
+                  <div>{size.name}</div>
+                  <div>{size.price}€</div>
+                </div>
               </Button>
             );
           })}
         </div>
       </div>
       <div className="d-flex justify-content-end">
-        <Button onClick={() => setActiveStep(currentStep + 1)}>
+        <Button
+          onClick={() => setActiveStep(currentStep + 1)}
+          disabled={selectedSize === -1}
+        >
           Choose toppings
         </Button>
       </div>
     </div>
   );
-}
-
-function getPizzaSizes() {
-  return [
-    {
-      text: "Small",
-      renderSize: { width: "5em", height: "5em" },
-    },
-    {
-      text: "Medium",
-      renderSize: { width: "6em", height: "6em" },
-    },
-    {
-      text: "Large",
-      renderSize: { width: "6.5em", height: "6.5em" },
-    },
-  ];
 }

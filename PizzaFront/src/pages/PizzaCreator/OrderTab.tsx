@@ -1,4 +1,9 @@
-import { Button } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Button, Toast } from "react-bootstrap";
+import { getPrice } from "../../lib/api/price";
+import { PriceResponse } from "../../types/priceRequestTypes";
+import { getOrderData, removeOrderData } from "../../lib/pizzaCreatorUtils";
+import { postOrder } from "../../lib/api/order";
 
 export default function OrderTab({
   currentStep,
@@ -7,7 +12,26 @@ export default function OrderTab({
   currentStep: number;
   setActiveStep: (step: number) => void;
 }) {
-  const order = getOrder();
+  const [priceData, setPriceData] = useState<PriceResponse | null>(null);
+  const order = getOrderData();
+
+  useEffect(() => {
+    const fetch = async () => {
+      setPriceData(await getPrice(order));
+    };
+
+    fetch();
+  }, []);
+
+  const handlePlaceOrder = async () => {
+    const success = await postOrder(order);
+
+    if (success) {
+      removeOrderData();
+      setActiveStep(currentStep + 1);
+    }
+  };
+
   return (
     <div>
       <div className="h-100 w-100 d-flex justify-content-center">
@@ -15,9 +39,9 @@ export default function OrderTab({
       </div>
       <div className="w-100 d-flex justify-content-between">
         <h5>
-          <b>Size:</b> {order.size}
+          <b>Size:</b> {order?.pizzaSize?.name}
         </h5>
-        <b>0.00</b>
+        <b>{priceData?.sizePrice ?? 0}€</b>
       </div>
       <hr />
       <div className="d-flex flex-column gap-2">
@@ -25,14 +49,21 @@ export default function OrderTab({
           <b>Toppings:</b>
         </h5>
         <div className="d-flex flex-column">
-          {order.toppings.map((topping) => {
+          {order?.toppings.map((topping) => {
             return (
               <>
-                <div className="d-flex gap-2 justify-content-between">
+                <div
+                  key={"topping" + topping.id}
+                  className="d-flex gap-2 justify-content-between"
+                >
                   <div>
                     {topping.name} x{topping.count}
                   </div>
-                  <b>0.00</b>
+                  <b>
+                    {priceData?.toppings.find((x) => x.id == topping.id)
+                      ?.price ?? 0}
+                    €
+                  </b>
                 </div>
                 <hr />
               </>
@@ -40,8 +71,9 @@ export default function OrderTab({
           })}
         </div>
       </div>
+      {priceData?.discountApplied && <div>10% discount applied</div>}
       <h4>
-        <b>Total price: 0.00</b>
+        <b>Total price: {priceData?.totalPrice ?? 0}€</b>
       </h4>
       <div className="d-flex justify-content-end gap-2">
         <Button
@@ -50,31 +82,8 @@ export default function OrderTab({
         >
           Change toppings
         </Button>
-        <Button>Place order</Button>
+        <Button onClick={handlePlaceOrder}>Place order</Button>
       </div>
     </div>
   );
-}
-
-function getOrder() {
-  return {
-    size: "Large",
-    toppings: [
-      {
-        id: 1,
-        name: "Cheddar",
-        count: 2,
-      },
-      {
-        id: 3,
-        name: "Bacon",
-        count: 1,
-      },
-      {
-        id: 4,
-        name: "Beef",
-        count: 3,
-      },
-    ],
-  };
 }

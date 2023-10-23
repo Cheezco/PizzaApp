@@ -6,6 +6,13 @@ export interface Topping {
   price: number;
 }
 
+export interface StoredTopping {
+  id: number;
+  name: string;
+  categoryId: number;
+  count: number;
+}
+
 export interface ToppingCategory {
   id: number;
   name: string;
@@ -28,8 +35,9 @@ export interface Order {
 }
 
 export interface CreateOrder {
-  pizzaSize: PizzaSize;
-  toppings: Topping[];
+  lastUpdate: Date;
+  pizzaSize: PizzaSize | null;
+  toppings: StoredTopping[];
 }
 
 export interface UpdateOrder {
