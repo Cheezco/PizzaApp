@@ -119,11 +119,17 @@ public class OrderController : ControllerBase
             CreationDate = DateTime.UtcNow,
             State = createOrderDto.IsDraft ? OrderState.Draft : OrderState.Waiting,
             Price = priceResponse.TotalPrice,
-            Size = pizzaSize,
-            Toppings = createOrderDto.Toppings,
+            Size = pizzaSize
         };
 
         await _orderRepository.AddAsync(order);
+
+        var toppings = createOrderDto.Toppings.FromDto(order.Id);
+
+        order.Toppings = toppings;
+
+        await _orderRepository.UpdateAsync(order);
+
 
         return Created("", order.ToDto());
     }

@@ -2,4 +2,9 @@ namespace PizzaApi.Core.DTO;
 
 public record ToppingDto(int Id, int CategoryId, string Name, int Limit, decimal Price);
 
-public record SelectedToppingDto(int Id, int CategoryId, int Count);
+public record SelectedToppingDto()
+{
+    public int Id { get; set; }
+    public int CategoryId { get; set; }
+    public int Count { get; set; }
+}
