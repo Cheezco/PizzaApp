@@ -1,3 +1,3 @@
 ﻿namespace PizzaApi.Core.DTO;
 
-public record PizzaSizeDto(int Id, string Name, int Order);
+public record PizzaSizeDto(int Id, string Name, int Order, decimal Price);
