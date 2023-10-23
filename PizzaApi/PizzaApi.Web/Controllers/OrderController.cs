@@ -9,7 +9,7 @@ using PizzaApi.Infrastructure.Interfaces;
 
 namespace PizzaApi.Web.Controllers;
 
-[Microsoft.AspNetCore.Components.Route("api/orders")]
+[Route("api/orders")]
 [ApiController]
 public class OrderController : ControllerBase
 {

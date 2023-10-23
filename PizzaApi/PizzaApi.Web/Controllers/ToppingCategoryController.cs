@@ -9,7 +9,7 @@ using PizzaApi.Infrastructure.Interfaces;
 
 namespace PizzaApi.Web.Controllers;
 
-[Microsoft.AspNetCore.Components.Route("api/topping-categories")]
+[Route("api/topping-categories")]
 [ApiController]
 public class ToppingCategoryController : ControllerBase
 {
