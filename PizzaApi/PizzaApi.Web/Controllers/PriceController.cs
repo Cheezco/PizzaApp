@@ -3,6 +3,7 @@ using PizzaApi.Core.Entities;
 using PizzaApi.Core.PriceCalculations;
 using PizzaApi.Core.Specifications;
 using PizzaApi.Infrastructure.Interfaces;
+using PizzaApi.Infrastructure.Misc;
 
 namespace PizzaApi.Web.Controllers;
 
@@ -10,43 +11,20 @@ namespace PizzaApi.Web.Controllers;
 [ApiController]
 public class PriceController : ControllerBase
 {
-    private readonly IRepository<PizzaSize> _pizzaSizeRepository;
-    private readonly IRepository<Topping> _toppingRepository;
-    private readonly IPizzaPriceCalculator _pizzaPriceCalculator;
+    private readonly PriceRequestHandler _priceRequestHandler;
 
-    public PriceController(IRepository<PizzaSize> pizzaSizeRepository, IRepository<Topping> toppingRepository,
-        IPizzaPriceCalculator pizzaPriceCalculator)
+    public PriceController(PriceRequestHandler priceRequestHandler)
     {
-        _pizzaSizeRepository = pizzaSizeRepository;
-        _toppingRepository = toppingRepository;
-        _pizzaPriceCalculator = pizzaPriceCalculator;
+        _priceRequestHandler = priceRequestHandler;
     }
 
     [HttpPost(Name = "CalculatePrice")]
     public async Task<ActionResult<PriceResponse>> CalculatePrice(PriceRequest priceRequest)
     {
-        var pizzaSizeSpec = new PizzaSizeByIdSpec(priceRequest.PizzaSizeId);
-        var pizzaSize = await _pizzaSizeRepository.FirstOrDefaultAsync(pizzaSizeSpec);
+        var priceResponse = await _priceRequestHandler.GetPriceAsync(priceRequest);
 
-        if (pizzaSize is null) return BadRequest();
+        if (priceResponse is null) return BadRequest();
 
-        var toppings = new List<PriceRequestTopping>();
-
-        var uniqueToppings = priceRequest.Toppings
-            .DistinctBy(x => x.Id)
-            .ToList();
-
-        foreach (var toppingDto in uniqueToppings)
-        {
-            var spec = new ToppingByIdSpec(toppingDto.CategoryId, toppingDto.Id);
-            var topping = await _toppingRepository.FirstOrDefaultAsync(spec);
-
-            if (topping is null || toppingDto.Count > topping.Limit) return BadRequest();
-
-            toppings.Add(new PriceRequestTopping(toppingDto.Id, toppingDto.CategoryId, toppingDto.Count,
-                topping.Price));
-        }
-
-        return Ok(_pizzaPriceCalculator.GetPrice(pizzaSize, toppings));
+        return priceResponse;
     }
 }

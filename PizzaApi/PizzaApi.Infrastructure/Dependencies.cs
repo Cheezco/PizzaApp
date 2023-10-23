@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PizzaApi.Core.PriceCalculations;
 using PizzaApi.Infrastructure.Data;
 using PizzaApi.Infrastructure.Interfaces;
+using PizzaApi.Infrastructure.Misc;
 
 namespace PizzaApi.Infrastructure;
 
@@ -15,6 +16,7 @@ public static class Dependencies
             x.UseInMemoryDatabase("Main"));
 
         services
+            .AddTransient<PriceRequestHandler>()
             .AddTransient<IPizzaPriceCalculator, PizzaPriceCalculator>()
             .AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
             .AddScoped<DbSeeder>();

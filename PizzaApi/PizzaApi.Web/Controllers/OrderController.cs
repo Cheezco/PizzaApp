@@ -2,10 +2,12 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApi.Core.DTO;
 using PizzaApi.Core.Entities;
+using PizzaApi.Core.Enums;
 using PizzaApi.Core.Extensions;
 using PizzaApi.Core.Misc;
 using PizzaApi.Core.Specifications;
 using PizzaApi.Infrastructure.Interfaces;
+using PizzaApi.Infrastructure.Misc;
 
 namespace PizzaApi.Web.Controllers;
 
@@ -14,10 +16,15 @@ namespace PizzaApi.Web.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly IRepository<Order> _orderRepository;
+    private readonly IRepository<PizzaSize> _pizzaSizeRepository;
+    private readonly PriceRequestHandler _priceRequestHandler;
 
-    public OrderController(IRepository<Order> orderRepository)
+    public OrderController(IRepository<Order> orderRepository, IRepository<PizzaSize> pizzaSizeRepository,
+        PriceRequestHandler priceRequestHandler)
     {
         _orderRepository = orderRepository;
+        _pizzaSizeRepository = pizzaSizeRepository;
+        _priceRequestHandler = priceRequestHandler;
     }
 
     [HttpGet(Name = "GetOrders")]
@@ -75,6 +82,7 @@ public class OrderController : ControllerBase
         if (order is null) return NotFound();
 
         order.State = updateOrderDto.State;
+        order.UpdateDate = DateTime.UtcNow;
 
         await _orderRepository.UpdateAsync(order);
 
@@ -92,6 +100,32 @@ public class OrderController : ControllerBase
         await _orderRepository.DeleteAsync(order);
 
         return NoContent();
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<OrderDto>> Create(CreateOrderDto createOrderDto)
+    {
+        var priceResponse = await _priceRequestHandler.GetPriceAsync(createOrderDto.ToPriceRequest());
+
+        if (priceResponse is null) return BadRequest();
+
+        var pizzaSpec = new PizzaSizeByIdSpec(createOrderDto.PizzaSize.Id);
+        var pizzaSize = await _pizzaSizeRepository.FirstOrDefaultAsync(pizzaSpec);
+
+        if (pizzaSize is null) return NotFound();
+
+        var order = new Order
+        {
+            CreationDate = DateTime.UtcNow,
+            State = createOrderDto.IsDraft ? OrderState.Draft : OrderState.Waiting,
+            Price = priceResponse.TotalPrice,
+            Size = pizzaSize,
+            Toppings = createOrderDto.Toppings,
+        };
+
+        await _orderRepository.AddAsync(order);
+
+        return Created("", order.ToDto());
     }
 
     private string? CreateResourceUri(int page, int pageSize, ResourceUriType type)
