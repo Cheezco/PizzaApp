@@ -1,3 +1,3 @@
 namespace PizzaApi.Core.DTO;
 
-public record ToppingCategoryDto(string Name, List<ToppingDto> Toppings);
+public record ToppingCategoryDto(int Id, string Name, List<ToppingDto> Toppings);
