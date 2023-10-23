@@ -9,7 +9,8 @@ public class PizzaPriceCalculator : IPizzaPriceCalculator
         var response = new PriceResponse
         {
             SizePrice = pizzaSize.Price,
-            TotalPrice = pizzaSize.Price
+            TotalPrice = pizzaSize.Price,
+            Toppings = new List<PriceResponseTopping>()
         };
 
         toppings.ForEach(x =>
@@ -27,6 +28,7 @@ public class PizzaPriceCalculator : IPizzaPriceCalculator
         if (toppings.Count > 3)
         {
             response.TotalPrice *= 0.9m;
+            response.DiscountApplied = true;
         }
 
         return response;
