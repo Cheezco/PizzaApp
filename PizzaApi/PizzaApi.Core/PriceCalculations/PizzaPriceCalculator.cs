@@ -1,6 +1,6 @@
 using PizzaApi.Core.Entities;
 
-namespace PizzaApi.Core.PizzaPriceCalculator;
+namespace PizzaApi.Core.PriceCalculations;
 
 public class PizzaPriceCalculator : IPizzaPriceCalculator
 {
