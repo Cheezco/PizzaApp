@@ -6,4 +6,6 @@ public class Topping
     public string Name { get; set; } = string.Empty;
     public int Limit { get; set; }
     public decimal Price { get; set; }
+    public int ToppingCategoryId { get; set; }
+    public ToppingCategory ToppingCategory { get; set; }
 }
