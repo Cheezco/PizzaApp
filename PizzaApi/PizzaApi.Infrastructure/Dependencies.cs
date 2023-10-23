@@ -14,7 +14,8 @@ public static class Dependencies
             x.UseInMemoryDatabase("Main"));
 
         services
-            .AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            .AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
+            .AddScoped<DbSeeder>();
 
         services.AddCors(options =>
         {

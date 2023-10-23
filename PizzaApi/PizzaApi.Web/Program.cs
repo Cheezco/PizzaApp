@@ -1,9 +1,10 @@
 using PizzaApi.Infrastructure;
+using PizzaApi.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -13,7 +14,6 @@ var app = builder.Build();
 
 app.UseRouting();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -23,6 +23,10 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.UseAuthorization();
+
+using var scope = app.Services.CreateScope();
+var dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
+await dbSeeder.SeedAsync();
 
 app.UseCors("AllowAll");
 
