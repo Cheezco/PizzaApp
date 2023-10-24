@@ -21,4 +21,8 @@ async function getOrders(draftOrders: boolean = false): Promise<Order[]> {
   return response.data;
 }
 
-export { postOrder, getOrders };
+async function deleteOrder(id: number) {
+  await API.delete(`orders/${id}`);
+}
+
+export { postOrder, getOrders, deleteOrder };

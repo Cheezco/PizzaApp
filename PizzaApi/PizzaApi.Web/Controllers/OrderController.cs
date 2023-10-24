@@ -134,12 +134,16 @@ public class OrderController : ControllerBase
 
         if (order is null) return NotFound();
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(User, order, PolicyNames.ResourceOwner);
-
-        if (!authorizationResult.Succeeded)
-        {
+        if (order.UserId != User.FindFirstValue(JwtRegisteredClaimNames.Sub) || User.IsInRole(Roles.Admin))
             return Forbid();
-        }
+
+
+        // var authorizationResult = await _authorizationService.AuthorizeAsync(User, order, PolicyNames.ResourceOwner);
+        //
+        // if (!authorizationResult.Succeeded)
+        // {
+        //     return Forbid();
+        // }
 
         await _orderRepository.DeleteAsync(order);
 
