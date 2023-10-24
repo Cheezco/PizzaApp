@@ -1,6 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using PizzaApi.Core.Auth;
+using PizzaApi.Core.Auth.Models;
 using PizzaApi.Core.PriceCalculations;
 using PizzaApi.Infrastructure.Data;
 using PizzaApi.Infrastructure.Interfaces;
@@ -18,8 +25,11 @@ public static class Dependencies
         services
             .AddTransient<PriceRequestHandler>()
             .AddTransient<IPizzaPriceCalculator, PizzaPriceCalculator>()
+            .AddTransient<IJwtTokenService, JwtTokenService>()
             .AddScoped(typeof(IRepository<>), typeof(EfRepository<>))
-            .AddScoped<DbSeeder>();
+            .AddScoped<DbSeeder>()
+            .AddScoped<AuthDbSeeder>()
+            .AddSingleton<IAuthorizationHandler, ResourceOwnerAuthorizationHandler>();
 
         services.AddCors(options =>
         {
@@ -31,5 +41,30 @@ public static class Dependencies
                     .WithExposedHeaders("Pagination");
             });
         });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(PolicyNames.ResourceOwner,
+                policy => policy.Requirements.Add(new ResourceOwnerRequirement()));
+        });
+
+        services
+            .AddIdentity<PizzaUser, IdentityRole>()
+            .AddEntityFrameworkStores<MainContext>()
+            .AddDefaultTokenProviders();
+
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters.ValidAudience = configuration["jwt:ValidAudience"];
+                options.TokenValidationParameters.ValidIssuer = configuration["jwt:ValidIssuer"];
+                options.TokenValidationParameters.IssuerSigningKey =
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["jwt:Secret"] ?? ""));
+            });
     }
 }

@@ -21,12 +21,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 using var scope = app.Services.CreateScope();
 var dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
 await dbSeeder.SeedAsync();
+
+var authDbSeeder = scope.ServiceProvider.GetRequiredService<AuthDbSeeder>();
+await authDbSeeder.SeedAsync();
 
 app.UseCors("AllowAll");
 

@@ -1,5 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PizzaApi.Core.Auth.Models;
 using PizzaApi.Core.DTO;
 using PizzaApi.Core.Entities;
 using PizzaApi.Core.Enums;
@@ -18,21 +22,31 @@ public class OrderController : ControllerBase
     private readonly IRepository<Order> _orderRepository;
     private readonly IRepository<PizzaSize> _pizzaSizeRepository;
     private readonly PriceRequestHandler _priceRequestHandler;
+    private readonly IAuthorizationService _authorizationService;
 
     public OrderController(IRepository<Order> orderRepository, IRepository<PizzaSize> pizzaSizeRepository,
-        PriceRequestHandler priceRequestHandler)
+        PriceRequestHandler priceRequestHandler, IAuthorizationService authorizationService)
     {
         _orderRepository = orderRepository;
         _pizzaSizeRepository = pizzaSizeRepository;
         _priceRequestHandler = priceRequestHandler;
+        _authorizationService = authorizationService;
     }
 
     [HttpGet(Name = "GetOrders")]
-    public async Task<IEnumerable<OrderDto>> GetMany(int page = PaginationHelper.DefaultPage,
+    [Authorize(Roles = Roles.User)]
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetMany(int page = PaginationHelper.DefaultPage,
         int pageSize = PaginationHelper.DefaultPageSize, bool includeDraft = false, bool draftOnly = false)
     {
         var orderSpec = new OrdersSpec(page, pageSize, includeDraft, draftOnly);
         var orders = await _orderRepository.ListAsync(orderSpec);
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, orders, PolicyNames.ResourceOwner);
+
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
 
         var totalCount = await _orderRepository.CountAsync(orderSpec);
         var totalPages = PaginationHelper.CalculateTotalPages(pageSize, totalCount);
@@ -59,10 +73,11 @@ public class OrderController : ControllerBase
 
         Response.Headers.Add("Pagination", JsonSerializer.Serialize(paginationMetadata));
 
-        return orders.ToDto();
+        return Ok(orders.ToDto());
     }
 
     [HttpGet("{orderId:int}")]
+    [Authorize(Roles = Roles.User)]
     public async Task<IActionResult> Get(int orderId)
     {
         var spec = new OrderByIdSpec(orderId);
@@ -70,10 +85,18 @@ public class OrderController : ControllerBase
 
         if (order is null) return NotFound();
 
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, order, PolicyNames.ResourceOwner);
+
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
+
         return Ok(order.ToDto());
     }
 
     [HttpPut("{orderId:int}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<OrderDto>> Update(int orderId, UpdateOrderDto updateOrderDto)
     {
         var spec = new OrderByIdSpec(orderId);
@@ -90,12 +113,20 @@ public class OrderController : ControllerBase
     }
 
     [HttpDelete("{orderId:int}")]
+    [Authorize(Roles = Roles.User)]
     public async Task<ActionResult> Remove(int orderId)
     {
         var spec = new OrderByIdSpec(orderId);
         var order = await _orderRepository.FirstOrDefaultAsync(spec);
 
         if (order is null) return NotFound();
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, order, PolicyNames.ResourceOwner);
+
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
 
         await _orderRepository.DeleteAsync(order);
 
@@ -105,6 +136,10 @@ public class OrderController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<OrderDto>> Create(CreateOrderDto createOrderDto)
     {
+        var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        if (userId is null) return Forbid();
+
         var priceResponse = await _priceRequestHandler.GetPriceAsync(createOrderDto.ToPriceRequest());
 
         if (priceResponse is null) return BadRequest();
@@ -119,7 +154,8 @@ public class OrderController : ControllerBase
             CreationDate = DateTime.UtcNow,
             State = createOrderDto.IsDraft ? OrderState.Draft : OrderState.Waiting,
             Price = priceResponse.TotalPrice,
-            Size = pizzaSize
+            Size = pizzaSize,
+            UserId = userId
         };
 
         await _orderRepository.AddAsync(order);

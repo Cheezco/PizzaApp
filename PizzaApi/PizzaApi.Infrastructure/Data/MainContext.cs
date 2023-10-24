@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using PizzaApi.Core.Auth.Models;
 using PizzaApi.Core.DTO;
 using PizzaApi.Core.Entities;
 
 namespace PizzaApi.Infrastructure.Data;
 
-public class MainContext : DbContext
+public class MainContext : IdentityDbContext<PizzaUser>
 {
     public MainContext(DbContextOptions<MainContext> options) : base(options)
     {
