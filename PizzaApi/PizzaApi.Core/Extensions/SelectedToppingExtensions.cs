@@ -10,7 +10,8 @@ public static class SelectedToppingExtensions
         => new()
         {
             Id = selectedTopping.Id,
-            CategoryId = selectedTopping.Topping.ToppingCategoryId,
+            Name = selectedTopping.Topping.Name,
+            CategoryId = selectedTopping.CategoryId,
             Count = selectedTopping.Count
         };
 
@@ -18,7 +19,11 @@ public static class SelectedToppingExtensions
         => selectedToppings.Select(x => x.ToDto()).ToList();
 
     public static SelectedTopping FromDto(this SelectedToppingDto selectedToppingDto, int orderId)
-        => new() { ToppingId = selectedToppingDto.Id, Count = selectedToppingDto.Count, OrderId = orderId };
+        => new()
+        {
+            ToppingId = selectedToppingDto.Id, Count = selectedToppingDto.Count, OrderId = orderId,
+            CategoryId = selectedToppingDto.CategoryId
+        };
 
     public static List<SelectedTopping> FromDto(this IEnumerable<SelectedToppingDto> selectedToppingDtos, int orderId)
         => selectedToppingDtos.Select(x => x.FromDto(orderId)).ToList();

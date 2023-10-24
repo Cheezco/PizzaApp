@@ -4,7 +4,7 @@ import SizeTab from "./SizeTab";
 import ToppingTab from "./ToppingTab";
 import OrderTab from "./OrderTab";
 import { Card } from "react-bootstrap";
-import OrderPlacedTab from "./OrderPlacedTab.1";
+import OrderPlacedTab from "./OrderPlacedTab";
 import { CreateOrder } from "../../types/dataTypes";
 
 export function PizzaCreator() {
@@ -18,7 +18,7 @@ export function PizzaCreator() {
   };
 
   return (
-    <div className="w-100 h-75 d-flex justify-content-center align-items-center py-4">
+    <div className="w-100 h-100 d-flex justify-content-center align-items-center py-4">
       <Card className="w-50 shadow">
         <Card.Body className="d-flex w-100 h-100 flex-column">
           <Stepper
@@ -73,7 +73,10 @@ export function PizzaCreator() {
               setOrder={(order) => setOrder(order)}
             />
           ) : (
-            <OrderPlacedTab order={order} />
+            <OrderPlacedTab
+              order={order}
+              setActiveStep={(step) => setActiveStep(step)}
+            />
           )}
         </Card.Body>
       </Card>

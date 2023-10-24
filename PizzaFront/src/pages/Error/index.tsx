@@ -47,7 +47,7 @@ export default function ErrorPage() {
         <h1>Oops!</h1>
         <p>Sorry, an unexpected error has occured</p>
         <img
-          src="./images/error-doggo.jpg"
+          src="/images/error-doggo.jpg"
           className="error-image rounded border shadow"
         />
         <p>

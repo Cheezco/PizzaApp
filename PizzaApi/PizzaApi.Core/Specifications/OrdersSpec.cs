@@ -16,6 +16,8 @@ public class OrdersSpec : Specification<Order>
                 : !draftOnly || x.State == OrderState.Draft)
             .Skip(PaginationHelper.CalculateSkip(pageSize, page))
             .Take(PaginationHelper.CalculateTake(pageSize))
-            .Include(x => x.Toppings);
+            .Include(x => x.Toppings)
+            .ThenInclude(x => x.Topping)
+            .Include(x => x.Size);
     }
 }
