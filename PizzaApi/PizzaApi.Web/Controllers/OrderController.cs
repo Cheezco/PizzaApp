@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
+using Ardalis.Specification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaApi.Core.Auth.Models;
@@ -38,15 +39,27 @@ public class OrderController : ControllerBase
     public async Task<ActionResult<IEnumerable<OrderDto>>> GetMany(int page = PaginationHelper.DefaultPage,
         int pageSize = PaginationHelper.DefaultPageSize, bool includeDraft = false, bool draftOnly = false)
     {
-        var orderSpec = new OrdersSpec(page, pageSize, includeDraft, draftOnly);
-        var orders = await _orderRepository.ListAsync(orderSpec);
-
-        var authorizationResult = await _authorizationService.AuthorizeAsync(User, orders, PolicyNames.ResourceOwner);
-
-        if (!authorizationResult.Succeeded)
+        var orders = new List<Order>();
+        ISpecification<Order> orderSpec;
+        if (User.IsInRole(Roles.Admin))
         {
-            return Forbid();
+            orderSpec = new OrdersSpec(page, pageSize, includeDraft, draftOnly);
+            orders = await _orderRepository.ListAsync(orderSpec);
         }
+        else
+        {
+            orderSpec = new UserOrdersSpec(User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? "", page, pageSize,
+                includeDraft, draftOnly);
+            orders = await _orderRepository.ListAsync(orderSpec);
+        }
+
+
+        // var authorizationResult = await _authorizationService.AuthorizeAsync(User, orders, PolicyNames.ResourceOwner);
+        //
+        // if (!authorizationResult.Succeeded)
+        // {
+        //     return Forbid();
+        // }
 
         var totalCount = await _orderRepository.CountAsync(orderSpec);
         var totalPages = PaginationHelper.CalculateTotalPages(pageSize, totalCount);

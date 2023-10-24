@@ -1,7 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
 using PizzaApi.Infrastructure;
 using PizzaApi.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddControllers();
 
