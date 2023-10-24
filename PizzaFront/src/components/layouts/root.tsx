@@ -69,7 +69,7 @@ function RootNavbar() {
                 <Nav.Link>Login</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/register">
-                <Nav.Link>Register</Nav.Link>
+                <Nav.Link disabled={true}>Register</Nav.Link>
               </LinkContainer>
             </>
           )}
