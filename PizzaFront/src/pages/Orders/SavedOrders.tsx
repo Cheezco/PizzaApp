@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Accordion, Button, Modal } from "react-bootstrap";
+import { Order } from "../../types/dataTypes";
 
 export default function SavedOrders() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [draftOrders, setDraftOrders] = useState<Order[]>([]);
   const orders = getOrders();
 
   return (

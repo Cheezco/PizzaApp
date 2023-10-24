@@ -12,4 +12,12 @@ function clearToken() {
   sessionStorage.removeItem(key);
 }
 
-export { getToken, saveToken, clearToken };
+function getAxiosConfig() {
+  return {
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+  };
+}
+
+export { getToken, saveToken, clearToken, getAxiosConfig };

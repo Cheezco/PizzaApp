@@ -74,7 +74,12 @@ function ToppingCategoryTab({ id }: { id: number }) {
   return (
     <div className="d-flex gap-2 flex-wrap">
       {toppings.map((topping) => {
-        return <ToppingElement topping={topping} />;
+        return (
+          <ToppingElement
+            key={"ToppingElement" + topping.id}
+            topping={topping}
+          />
+        );
       })}
     </div>
   );

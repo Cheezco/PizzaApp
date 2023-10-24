@@ -4,16 +4,41 @@ import { getPrice } from "../../lib/api/price";
 import { PriceResponse } from "../../types/priceRequestTypes";
 import { getOrderData, removeOrderData } from "../../lib/pizzaCreatorUtils";
 import { postOrder } from "../../lib/api/order";
+import { getToken } from "../../lib/authUtils";
+import { useJwt } from "react-jwt";
+import { JwtToken } from "../../types/authTypes";
+import { CreateOrder } from "../../types/dataTypes";
 
 export default function OrderTab({
   currentStep,
   setActiveStep,
+  setOrder,
 }: {
   currentStep: number;
   setActiveStep: (step: number) => void;
+  setOrder: (order: CreateOrder) => void;
 }) {
   const [priceData, setPriceData] = useState<PriceResponse | null>(null);
   const order = getOrderData();
+  const { decodedToken, isExpired, reEvaluateToken } = useJwt<JwtToken>(
+    getToken()
+  );
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      reEvaluateToken(getToken());
+
+      if (!decodedToken || isExpired) {
+        setLoggedIn(false);
+        return;
+      }
+
+      setLoggedIn(true);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [decodedToken, isExpired, reEvaluateToken]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -27,6 +52,7 @@ export default function OrderTab({
     const success = await postOrder(order);
 
     if (success) {
+      setOrder(order);
       removeOrderData();
       setActiveStep(currentStep + 1);
     }
@@ -75,6 +101,7 @@ export default function OrderTab({
       <h4>
         <b>Total price: {priceData?.totalPrice ?? 0}€</b>
       </h4>
+      {!loggedIn && <div>Login or register to place an order</div>}
       <div className="d-flex justify-content-end gap-2">
         <Button
           variant="secondary"
@@ -82,7 +109,9 @@ export default function OrderTab({
         >
           Change toppings
         </Button>
-        <Button onClick={handlePlaceOrder}>Place order</Button>
+        <Button onClick={handlePlaceOrder} disabled={!loggedIn}>
+          Place order
+        </Button>
       </div>
     </div>
   );

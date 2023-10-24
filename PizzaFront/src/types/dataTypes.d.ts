@@ -31,12 +31,13 @@ export interface Order {
   creationDate: Date;
   state: string;
   pizzaSize: PizzaSize;
-  toppings: Topping[];
+  toppings: StoredTopping[];
 }
 
 export interface CreateOrder {
   lastUpdate: Date;
   pizzaSize: PizzaSize | null;
+  isDraft: boolean;
   toppings: StoredTopping[];
 }
 
