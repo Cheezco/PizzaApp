@@ -4,8 +4,6 @@ import { getOrders } from "../../lib/api/order";
 import { Order } from "../../types/dataTypes";
 
 export default function OrderHistory() {
-  const ordersOld = getOrdersOld();
-
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -52,81 +50,4 @@ export default function OrderHistory() {
       </>
     </>
   );
-}
-
-function getOrdersOld() {
-  return [
-    {
-      id: 1,
-      lastOrder: "2023/01/01",
-      size: "Large",
-      price: "0.00",
-      state: "Draft",
-      toppings: [
-        {
-          id: 1,
-          name: "Cheddar",
-          count: 2,
-        },
-        {
-          id: 3,
-          name: "Bacon",
-          count: 1,
-        },
-        {
-          id: 4,
-          name: "Beef",
-          count: 3,
-        },
-      ],
-    },
-    {
-      id: 2,
-      lastOrder: "2023/01/01",
-      size: "Large",
-      price: "0.00",
-      state: "Draft",
-      toppings: [
-        {
-          id: 1,
-          name: "Cheddar",
-          count: 2,
-        },
-        {
-          id: 3,
-          name: "Bacon",
-          count: 1,
-        },
-        {
-          id: 4,
-          name: "Beef",
-          count: 3,
-        },
-      ],
-    },
-    {
-      id: 3,
-      lastOrder: "2023/01/01",
-      size: "Large",
-      price: "0.00",
-      state: "Confirmed",
-      toppings: [
-        {
-          id: 1,
-          name: "Cheddar",
-          count: 2,
-        },
-        {
-          id: 3,
-          name: "Bacon",
-          count: 1,
-        },
-        {
-          id: 4,
-          name: "Beef",
-          count: 3,
-        },
-      ],
-    },
-  ];
 }
